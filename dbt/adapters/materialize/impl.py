@@ -1,6 +1,12 @@
-from dbt.adapters.sql import SQLAdapter
-from dbt.adapters.materialize import MaterializeAdapterConnectionManager
+from dbt.adapters.postgres import PostgresAdapter
+from dbt.adapters.postgres import PostgresColumn
+from dbt.adapters.materialize import MaterializeConnectionManager
 
 
-class MaterializeAdapterAdapter(SQLAdapter):
-    ConnectionManager = MaterializeAdapterConnectionManager
+class MaterializeAdapter(PostgresAdapter):
+    ConnectionManager = MaterializeConnectionManager
+    Column = PostgresColumn
+
+    @classmethod
+    def date_function(cls):
+        return 'now()' 
