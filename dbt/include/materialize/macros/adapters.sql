@@ -24,36 +24,6 @@
   {%- endcall -%}
 {% endmacro %}
 
-{% macro materialize__get_columns_in_relation(relation) -%}
-  {% call statement('get_columns_in_relation', fetch_result=True) %}
-      show columns from {{ relation.identifier }}
-  {% endcall %}
-  {% set table = load_result('get_columns_in_relation').table %}
-  {{ return(sql_convert_columns_in_relation(table)) }}
-{% endmacro %}
-
-
-{% macro materialize__list_relations_without_caching(information_schema, schema) %}
-  {% call statement('list_relations_without_caching', fetch_result=True) -%}
-    select
-      '{{ information_schema.database.lower() }}' as database,
-      tablename as name,
-      schemaname as schema,
-      'table' as type
-    from pg_tables
-    where schemaname ilike '{{ schema }}'
-    union all
-    select
-      '{{ information_schema.database.lower() }}' as database,
-      viewname as name,
-      schemaname as schema,
-      'view' as type
-    from pg_views
-    where schemaname ilike '{{ schema }}'
-  {% endcall %}
-  {{ return(load_result('list_relations_without_caching').table) }}
-{% endmacro %}
-
 {% macro materialize__list_schemas(database) %}
   {% if database -%}
     {{ adapter.verify_database(database) }}
@@ -63,17 +33,6 @@
   {% endcall %}
   {{ return(load_result('list_schemas').table) }}
 {% endmacro %}
-
-{% macro materialize__check_schema_exists(information_schema, schema) -%}
-  {% if database -%}
-    {{ adapter.verify_database(information_schema.database) }}
-  {%- endif -%}
-  {% call statement('check_schema_exists', fetch_result=True, auto_begin=False) %}
-    show schemas;
-  {% endcall %}
-  {{ return(load_result('check_schema_exists').table) }}
-{% endmacro %}
-
 
 {% macro materialize__current_timestamp() -%}
   now()
