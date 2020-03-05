@@ -8,7 +8,7 @@ with open(os.path.join(this_directory, 'README.md')) as f:
     long_description = f.read()
 
 package_name = "dbt-materialize"
-package_version = "0.14.1"
+package_version = "0.15.2"
 description = """The materialize adpter plugin for dbt (data build tool)"""
 
 setup(
@@ -30,6 +30,6 @@ setup(
     },
     install_requires=[
         'dbt-core=={}'.format(package_version),
-        'psycopg2>=2.7.5,<2.8',
+        'psycopg2==2.8.4',
     ]
 )
