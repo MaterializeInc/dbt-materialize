@@ -1,8 +1,13 @@
 {% macro materialize__load_csv_rows(model) %}
 
   {% set agate_table = model['agate_table'] %}
-  {% set cols_sql = ", ".join(["column%d as %s" % (i + 1, c) for (i, c) in enumerate(agate_table.column_names)) %}
   {% set bindings = agate_table.rows %}
+  {% set cols_sql %}
+    {%- for i, column in enumerate(agate_table.column_names) -%}
+      column{{i}} as {{column}}
+      {%- if not loop.last%},{%- endif %}
+    {% endfor %}
+  {% endset %}
 
   {% set sql %}
     create materialized view {{ this.render(False) }} AS (
@@ -19,9 +24,7 @@
   {% endset %}
 
   {% set _ = adapter.add_query(sql, bindings=bindings, abridge_sql_log=True) %}
-
-  return(sql)
-
+  {{ return(sql) }}
 {% endmacro %}
 
 {% macro materialize__reset_csv_table(model, full_refresh, old_relation) %}
@@ -44,7 +47,6 @@
   {{ run_hooks(pre_hooks, inside_transaction=True) }}
 
   -- build model
-  {% set create_table_sql = reset_csv_table(model, full_refresh_mode, old_relation) %}
   {% set status = 'CREATE' %}
   {% set num_rows = (csv_table.rows | length) %}
   {% set sql = load_csv_rows(model) %}
