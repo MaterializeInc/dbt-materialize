@@ -26,6 +26,7 @@ setup(
         'dbt': [
             'include/materialize/dbt_project.yml',
             'include/materialize/macros/*.sql',
+            'include/materialize/macros/**/*.sql',
         ]
     },
     install_requires=[
