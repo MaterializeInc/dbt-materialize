@@ -45,7 +45,7 @@ class MaterializeAdapter(PostgresAdapter):
         as_index = view_sql.index(" AS ") + 4
         view_def = view_sql[as_index:]
         
-        if from_relation.is_table():
+        if from_relation.is_table:
            self.execute_macro(
                "create_table_as",
                kwargs={'temporary': False, 'relation': to_relation, 'sql': view_def}
