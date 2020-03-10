@@ -6,6 +6,7 @@ MATERIALIZE_GET_COLUMNS_MACRO_NAME = 'materialize_get_columns'
 MATERIALIZE_CONVERT_COLUMNS_MACRO_NAME = 'sql_convert_columns_in_relation'
 MATERIALIZE_GET_FULL_VIEWS_MACRO_NAME = 'materialize_get_full_views'
 MATERIALIZE_GET_SOURCES_MACRO_NAME = 'materialize_get_sources'
+MATERIALIZE_SHOW_VIEW_MACRO_NAME = 'materialize_show_view'
 
 class MaterializeAdapter(PostgresAdapter):
     ConnectionManager = MaterializeConnectionManager
@@ -33,6 +34,28 @@ class MaterializeAdapter(PostgresAdapter):
             MATERIALIZE_CONVERT_COLUMNS_MACRO_NAME,
             kwargs={'table': table}
         )
+
+    def rename_relation(self, from_relation, to_relation):
+        from_sql = self.execute_macro(
+            MATERIALIZE_SHOW_VIEW_MACRO_NAME,
+            kwargs={'relation': from_relation}
+        )
+
+        view_sql = from_sql[0][1]
+        as_index = view_sql.index(" AS ") + 4
+        view_def = view_sql[as_index:]
+        
+        if from_relation.is_table():
+           self.execute_macro(
+               "create_table_as",
+               kwargs={'temporary': False, 'relation': to_relation, 'sql': view_def}
+           )
+        else:
+           self.execute_macro(
+               "create_view_as",
+               kwargs={'relation': to_relation, 'sql': view_def}
+           )
+        return self.drop_relation(from_relation)
 
     def list_relations_without_caching(self, information_schema, schema):
         full_views = self.execute_macro(

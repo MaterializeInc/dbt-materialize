@@ -1,6 +1,6 @@
 {% macro materialize__create_table_as(temporary, relation, sql) -%}
 
-  create materialized view if not exists {{ relation }}
+  create materialized view {{ relation }}
   as (
     {{ sql }}
   );
@@ -22,6 +22,12 @@
   {%- call statement('drop_schema') -%}
     drop schema if exists {{ schema_name }} cascade
   {%- endcall -%}
+{% endmacro %}
+
+{% macro default__drop_relation(relation) -%}
+  {% call statement('drop_relation', auto_begin=False) -%}
+    drop view if exists {{ relation }} cascade
+  {%- endcall %}
 {% endmacro %}
 
 {% macro materialize__list_schemas(database) %}

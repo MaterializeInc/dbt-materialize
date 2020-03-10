@@ -18,3 +18,10 @@
   {% endcall %}
   {{ return(load_result('get_sources').table) }}
 {% endmacro %}
+
+{% macro materialize_show_view(relation) -%}
+  {% call statement('show_view', fetch_result=True, auto_begin=False) %}
+    show create view {{ relation }}
+  {% endcall %}
+  {{ return(load_result('show_view').table) }}
+{% endmacro %}
