@@ -24,7 +24,7 @@
   {%- endcall -%}
 {% endmacro %}
 
-{% macro default__drop_relation(relation) -%}
+{% macro materialize__drop_relation(relation) -%}
   {% call statement('drop_relation', auto_begin=False) -%}
     drop view if exists {{ relation }} cascade
   {%- endcall %}
