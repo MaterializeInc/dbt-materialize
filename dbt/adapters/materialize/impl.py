@@ -46,16 +46,17 @@ class MaterializeAdapter(PostgresAdapter):
         view_def = view_sql[as_index:]
         
         if from_relation.is_table:
-           self.execute_macro(
+           self.execute(self.execute_macro(
                "create_table_as",
                kwargs={'temporary': False, 'relation': to_relation, 'sql': view_def}
-           )
+           ))
         else:
-           self.execute_macro(
+           self.execute(self.execute_macro(
                "create_view_as",
                kwargs={'relation': to_relation, 'sql': view_def}
-           )
-        return self.drop_relation(from_relation)
+           ))
+        self.drop_relation(from_relation)
+        return
 
     def list_relations_without_caching(self, information_schema, schema):
         full_views = self.execute_macro(
