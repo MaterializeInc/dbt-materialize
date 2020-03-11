@@ -1,6 +1,12 @@
 {% macro materialize__create_table_as(temporary, relation, sql) -%}
-
   create materialized view {{ relation }}
+  as (
+    {{ sql }}
+  );
+{%- endmacro %}
+
+{% macro materialize__create_view_as(relation, sql) -%}
+  create view {{ relation }}
   as (
     {{ sql }}
   );
@@ -26,7 +32,7 @@
 
 {% macro materialize__drop_relation(relation) -%}
   {% call statement('drop_relation', auto_begin=False) -%}
-    drop view if exists {{ relation }} cascade
+    drop view if exists {{ relation }}
   {%- endcall %}
 {% endmacro %}
 
