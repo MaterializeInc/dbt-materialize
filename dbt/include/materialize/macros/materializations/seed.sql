@@ -33,18 +33,11 @@
 
 {%- endmacro %}
 
-{% macro materialize__reset_csv_table(model, full_refresh, old_relation, agate_table) -%}
-    {% if old_relation %}
-        {{ adapter.drop_relation(old_relation) }}
-    {% endif %}
-    {% set sql = create_csv_table(model, agate_table) %}
-    {{ return(sql) }}
-{%- endmacro %}
-
 {% materialization seed, adapter='materialize' %}
 
   {%- set identifier = model['alias'] -%}
   {%- set old_relation = adapter.get_relation(database=database, schema=schema, identifier=identifier) -%}
+
   {%- set agate_table = load_agate_table() -%}
   {%- do store_result('agate_table', status='OK', agate_table=agate_table) -%}
 
@@ -52,6 +45,10 @@
 
   -- `BEGIN` happens here:
   {{ run_hooks(pre_hooks, inside_transaction=True) }}
+
+  {% if old_relation %}
+     {{ adapter.drop_relation(old_relation) }}
+  {% endif %}
 
   -- build model
   {% set status = 'CREATE' %}

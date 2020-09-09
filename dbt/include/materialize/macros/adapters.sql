@@ -39,7 +39,7 @@
 
 {% macro materialize__drop_relation(relation) -%}
   {% call statement('drop_relation', auto_begin=False) -%}
-    drop view if exists {{ relation }}
+    drop view if exists {{ relation }} cascade
   {%- endcall %}
 {% endmacro %}
 

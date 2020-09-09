@@ -5,7 +5,6 @@ from dbt.adapters.materialize import MaterializeConnectionManager
 MATERIALIZE_GET_COLUMNS_MACRO_NAME = 'materialize_get_columns'
 MATERIALIZE_CONVERT_COLUMNS_MACRO_NAME = 'sql_convert_columns_in_relation'
 MATERIALIZE_GET_FULL_VIEWS_MACRO_NAME = 'materialize_get_full_views'
-MATERIALIZE_GET_SOURCES_MACRO_NAME = 'materialize_get_sources'
 MATERIALIZE_SHOW_VIEW_MACRO_NAME = 'materialize_show_view'
 
 class MaterializeAdapter(PostgresAdapter):
@@ -35,10 +34,10 @@ class MaterializeAdapter(PostgresAdapter):
             kwargs={'table': table}
         )
 
-    def list_relations_without_caching(self, schema):
+    def list_relations_without_caching(self, schema_relation):
         full_views = self.execute_macro(
             MATERIALIZE_GET_FULL_VIEWS_MACRO_NAME,
-            kwargs={'schema': schema}
+            kwargs={'schema': schema_relation.schema}
         )
 
         relations = []
@@ -47,29 +46,16 @@ class MaterializeAdapter(PostgresAdapter):
             'schema': True,
             'identifier': True
         }
-        for _view, _type, _queryable, _materialized  in full_views:
-            if _type == 'USER' and _queryable == 't':
-              dbt_type = 'table' if _materialized == 't' else 'view'
+        for _view, _type, _queryable, _materialized in full_views.rows:
+            if _type == 'USER' and _queryable:
+              dbt_type = 'table' if _materialized else 'view'
               relations.append(self.Relation.create(
-                  database=database,
-                  schema=schema,
+                  database=schema_relation.database,
+                  schema=schema_relation.schema,
                   identifier=_view,
                   quote_policy=quote_policy,
                   type=dbt_type
               ))
-
-        sources = self.execute_macro(
-            MATERIALIZE_GET_SOURCES_MACRO_NAME,
-            kwargs={'schema': schema}
-        )
-        for _src in sources:
-            relations.append(self.Relation.create(
-                database=database,
-                schema=schema,
-                identifier=_src,
-                quote_policy=quote_policy,
-                type='table'
-            ))
         return relations
 
     def check_schema_exists(self, database, schema):
