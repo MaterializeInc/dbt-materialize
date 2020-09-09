@@ -58,7 +58,7 @@ class MaterializeAdapter(PostgresAdapter):
         self.drop_relation(from_relation)
         return
 
-    def list_relations_without_caching(self, information_schema, schema):
+    def list_relations_without_caching(self, schema):
         full_views = self.execute_macro(
             MATERIALIZE_GET_FULL_VIEWS_MACRO_NAME,
             kwargs={'schema': schema}
@@ -102,8 +102,7 @@ class MaterializeAdapter(PostgresAdapter):
     def _link_cached_relations(self, manifest):
         schemas = set()
         # only link executable nodes
-        info_schema_name_map = self._get_cache_schemas(manifest,
-                                                       exec_only=True)
-        for db, schema in info_schema_name_map.search():
-            self.verify_database(db.database)
-            schemas.add(schema)
+        relations_schemas = self._get_cache_schemas(manifest)
+        for relation in relations_schemas:
+            self.verify_database(relation.database)
+            schemas.add(relation.schema.lower())

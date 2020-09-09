@@ -12,21 +12,21 @@
   );
 {%- endmacro %}
 
-{% macro materialize__create_schema(database_name, schema_name) -%}
-  {% if database_name -%}
-    {{ adapter.verify_database(database_name) }}
+{% macro postgres__create_schema(relation) -%}
+  {% if relation.database -%}
+    {{ adapter.verify_database(relation.database) }}
   {%- endif -%}
   {%- call statement('create_schema') -%}
-    create schema if not exists {{ schema_name }}
+    create schema if not exists {{ relation.without_identifier().include(database=False) }}
   {%- endcall -%}
 {% endmacro %}
 
-{% macro materialize__drop_schema(database_name, schema_name) -%}
-  {% if database_name -%}
-    {{ adapter.verify_database(database_name) }}
+{% macro postgres__drop_schema(relation) -%}
+  {% if relation.database -%}
+    {{ adapter.verify_database(relation.database) }}
   {%- endif -%}
   {%- call statement('drop_schema') -%}
-    drop schema if exists {{ schema_name }} cascade
+    drop schema if exists {{ relation.without_identifier().include(database=False) }} cascade
   {%- endcall -%}
 {% endmacro %}
 
