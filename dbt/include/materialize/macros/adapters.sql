@@ -30,6 +30,13 @@
   {%- endcall -%}
 {% endmacro %}
 
+{% macro materialize__rename_relation(from_relation, to_relation) -%}
+  {% set target_name = adapter.quote_as_configured(to_relation.identifier, 'identifier') %}
+  {% call statement('rename_relation') -%}
+    alter view {{ from_relation }} rename to {{ target_name }}
+  {%- endcall %}
+{% endmacro %}
+
 {% macro materialize__drop_relation(relation) -%}
   {% call statement('drop_relation', auto_begin=False) -%}
     drop view if exists {{ relation }}

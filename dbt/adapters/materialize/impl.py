@@ -35,29 +35,6 @@ class MaterializeAdapter(PostgresAdapter):
             kwargs={'table': table}
         )
 
-    def rename_relation(self, from_relation, to_relation):
-        from_sql = self.execute_macro(
-            MATERIALIZE_SHOW_VIEW_MACRO_NAME,
-            kwargs={'relation': from_relation}
-        )
-
-        view_sql = from_sql[0][1]
-        as_index = view_sql.index(" AS ") + 4
-        view_def = view_sql[as_index:]
-        
-        if from_relation.is_table:
-           self.execute(self.execute_macro(
-               "create_table_as",
-               kwargs={'temporary': False, 'relation': to_relation, 'sql': view_def}
-           ))
-        else:
-           self.execute(self.execute_macro(
-               "create_view_as",
-               kwargs={'relation': to_relation, 'sql': view_def}
-           ))
-        self.drop_relation(from_relation)
-        return
-
     def list_relations_without_caching(self, schema):
         full_views = self.execute_macro(
             MATERIALIZE_GET_FULL_VIEWS_MACRO_NAME,
