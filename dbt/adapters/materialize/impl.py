@@ -46,16 +46,15 @@ class MaterializeAdapter(PostgresAdapter):
             'schema': True,
             'identifier': True
         }
-        for _view, _type, _queryable, _materialized in full_views.rows:
-            if _type == 'USER' and _queryable:
-              dbt_type = 'table' if _materialized else 'view'
-              relations.append(self.Relation.create(
+        for _view, _type, _materialized in full_views.rows:
+            dbt_type = 'table' if _materialized else 'view'
+            relations.append(self.Relation.create(
                   database=schema_relation.database,
                   schema=schema_relation.schema,
                   identifier=_view,
                   quote_policy=quote_policy,
                   type=dbt_type
-              ))
+            ))
         return relations
 
     def check_schema_exists(self, database, schema):
