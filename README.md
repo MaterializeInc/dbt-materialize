@@ -1,5 +1,7 @@
 ## dbt-materialize
 
+Note, this plugin is a work in progress, and not yet suitable for production.
+
 ### Installation
 This plugin can be installed via pip:
 ```
