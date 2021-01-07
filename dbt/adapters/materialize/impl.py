@@ -4,6 +4,7 @@ from dbt.adapters.materialize import MaterializeConnectionManager
 
 MATERIALIZE_GET_COLUMNS_MACRO_NAME = 'materialize_get_columns'
 MATERIALIZE_CONVERT_COLUMNS_MACRO_NAME = 'sql_convert_columns_in_relation'
+MATERIALIZE_GET_SCHEMAS_MACRO_NAME = 'materialize_get_schemas'
 MATERIALIZE_GET_FULL_VIEWS_MACRO_NAME = 'materialize_get_full_views'
 MATERIALIZE_SHOW_VIEW_MACRO_NAME = 'materialize_show_view'
 
@@ -35,6 +36,13 @@ class MaterializeAdapter(PostgresAdapter):
         )
 
     def list_relations_without_caching(self, schema_relation):
+        # Materialize errors if you try to list views from a schema that
+        # doesn't exist. Check that the schema exists first, returning an
+        # empty list of relations if not.
+        schemas = self.execute_macro(MATERIALIZE_GET_SCHEMAS_MACRO_NAME)
+        if schema_relation.schema not in schemas:
+            return []
+
         full_views = self.execute_macro(
             MATERIALIZE_GET_FULL_VIEWS_MACRO_NAME,
             kwargs={'schema': schema_relation.schema}

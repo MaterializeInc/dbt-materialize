@@ -12,7 +12,7 @@
   );
 {%- endmacro %}
 
-{% macro postgres__create_schema(relation) -%}
+{% macro materialize__create_schema(relation) -%}
   {% if relation.database -%}
     {{ adapter.verify_database(relation.database) }}
   {%- endif -%}
@@ -21,7 +21,7 @@
   {%- endcall -%}
 {% endmacro %}
 
-{% macro postgres__drop_schema(relation) -%}
+{% macro materialize__drop_schema(relation) -%}
   {% if relation.database -%}
     {{ adapter.verify_database(relation.database) }}
   {%- endif -%}

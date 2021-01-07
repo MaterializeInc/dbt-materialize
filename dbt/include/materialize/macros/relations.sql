@@ -25,3 +25,10 @@
   {% endcall %}
   {{ return(load_result('show_view').table) }}
 {% endmacro %}
+
+{% macro materialize_get_schemas() -%}
+  {% call statement('get_schemas', fetch_result=True, auto_begin=False) %}
+    show extended schemas
+  {% endcall %}
+  {{ return(load_result('get_schemas').table) }}
+{% endmacro %}

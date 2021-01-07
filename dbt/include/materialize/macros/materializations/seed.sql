@@ -43,9 +43,6 @@
 
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
-  -- `BEGIN` happens here:
-  {{ run_hooks(pre_hooks, inside_transaction=True) }}
-
   {% if old_relation %}
      {{ adapter.drop_relation(old_relation) }}
   {% endif %}
@@ -59,9 +56,6 @@
     {{ sql }}
   {% endcall %}
 
-  {{ run_hooks(post_hooks, inside_transaction=True) }}
-  -- `COMMIT` happens here
-  {{ adapter.commit() }}
   {{ run_hooks(post_hooks, inside_transaction=False) }}
 
   {% set target_relation = this.incorporate(type='table') %}
