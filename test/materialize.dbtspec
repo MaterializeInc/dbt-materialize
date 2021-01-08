@@ -11,11 +11,48 @@ sequences:
   test_dbt_empty: empty
   test_dbt_base: base
   test_dbt_schema_test: schema_test
-  # todo@jldlaughlin - unblock the following 3 tests
-  # test_dbt_data_test: data_test
-  # test_dbt_ephemeral: ephemeral -- blocked by CTEs in CREATE statements
-  # test_dbt_ephemeral_data_tests: data_test_ephemeral_models -- blocked by CTEs in CREATE statements
-  # no incrementals, no snapshots
+  test_dbt_ephemeral: ephemeral
+  test_dbt_ephemeral_data_tests: data_test_ephemeral_models
+  test_dbt_data_test: data_test
+  # dbt-materialize does not support incremental models or snapshots
   # test_dbt_incremental: incremental
   # test_dbt_snapshot_strategy_timestamp: snapshot_strategy_timestamp
   # test_dbt_snapshot_strategy_check_cols: snapshot_strategy_check_cols
+
+
+# Custom base test that removes the last incremental portion.
+name: base
+project: base
+sequence:
+  - type: dbt
+    cmd: seed
+  - type: run_results
+    length: fact.seed.length
+  - type: dbt
+    cmd: run
+  - type: run_results
+    length: fact.run.length
+  - type: relation_types
+    expect: fact.expected_types_table
+  - type: relation_rows
+    name: base
+    length: fact.base.rowcount
+  - type: relations_equal
+    relations: fact.persisted_relations
+  - type: dbt
+    cmd: docs generate
+  - type: catalog
+    exists: True
+    nodes:
+      length: fact.catalog.nodes.length
+    sources:
+      length: fact.catalog.sources.length
+  # now swap
+  - type: dbt
+    cmd: run -m swappable
+    vars:
+      materialized_var: view
+  - type: run_results
+    length: 1
+  - type: relation_types
+    expect: fact.expected_types_view
