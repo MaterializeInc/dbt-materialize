@@ -1,8 +1,8 @@
 {% materialization incremental, adapter='materialize' %}
    -- Todo@jldlaughlin: Fail in a useful way!
 
-   -- TL;DR: dbt-materialize does not support incremental models, use table models
-   -- instead for the same functionality.
+   -- TL;DR: dbt-materialize does not support incremental models, use materializedview
+   -- models instead.
 
    -- Longer explanation:
    -- Incremental models are useful because instead of having to rebuild the entire table

@@ -1,12 +1,12 @@
-{% macro materialize__create_table_as(temporary, relation, sql) -%}
-  create materialized view {{ relation }}
+{% macro materialize__create_view_as(relation, sql) -%}
+  create view {{ relation }}
   as (
     {{ sql }}
   );
 {%- endmacro %}
 
-{% macro materialize__create_view_as(relation, sql) -%}
-  create view {{ relation }}
+{% macro materialize__create_materialized_view_as(relation, sql) -%}
+  create materialized view {{ relation }}
   as (
     {{ sql }}
   );

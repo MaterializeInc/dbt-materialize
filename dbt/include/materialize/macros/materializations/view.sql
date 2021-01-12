@@ -5,13 +5,10 @@
                                                 database=database,
                                                 type='view') -%}
 
-  -- drop the relation if it exists for some reason
   {{ adapter.drop_relation(target_relation) }}
 
-  -- `BEGIN` happens here:
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
-  -- build model
   {% call statement('main') -%}
     {{ create_view_as(target_relation, sql) }}
   {%- endcall %}
