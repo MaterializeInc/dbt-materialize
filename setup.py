@@ -30,7 +30,6 @@ setup(
         ]
     },
     install_requires=[
-        'dbt-core=={}'.format(package_version),
-        'psycopg2==2.8.4',
+        'dbt-postgres=={}'.format(package_version)
     ]
 )
