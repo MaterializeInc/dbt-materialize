@@ -1,4 +1,4 @@
-{% materialization table, adapter='materialize' %}
+{% materialization materializedview, adapter='materialize' %}
   {%- set identifier = model['alias'] -%}
   {%- set target_relation = api.Relation.create(identifier=identifier,
                                                 schema=schema,
@@ -10,7 +10,6 @@
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
   {% call statement('main') -%}
-    -- Creates a materialized view, not a table, in Materialize
     {{ create_materialized_view_as(target_relation, sql) }}
   {%- endcall %}
 

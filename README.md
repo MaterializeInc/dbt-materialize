@@ -20,21 +20,18 @@ only substitute `type: materialize` for `type: postgres`.
 
 ### Materializations
 
-Type | Supported? | Form in Materialize
+Type | Supported? | Details
 -----|------------|----------------
-table | :white_check_mark: | [materialized view](https://materialize.com/docs/sql/create-materialized-view/#main)
-view | :white_check_mark: | [view](https://materialize.com/docs/sql/create-view/#main)
-incremental | :x: |:x:
-ephemeral | :white_check_mark: | cte
+view | :white_check_mark: | Creates a [view](https://materialize.com/docs/sql/create-view/#main).
+materializedview | :white_check_mark: | Creates a [materialized view](https://materialize.com/docs/sql/create-materialized-view/#main).
+table | :white_check_mark: | Creates a [materialized view](https://materialize.com/docs/sql/create-materialized-view/#main). (Actual table support pending [#5266](https://github.com/MaterializeInc/materialize/issues/5266))
+ephemeral | :white_check_mark: | Executes queries using CTEs.
+incremental | :x: | Use the `materializedview` materialization instead!
 
-TL;DR: Use tables instead of incremental models when using Materialize as your data warehouse.
-
-Longer explanation:
-
-dbt's incremental models are valuable because they only spend your time and money transforming *new data*
-that has arrived in your data source. Luckily, this is exactly what Materialize's materialized views were
-built to do! Better yet, our materialized views will always return up-to-date results without manual or
-configured refreshed. For more information, check out [our documentation](https://materialize.com/docs/).
+dbt's incremental models are valuable because they only spend your time and money transforming your new
+data as it arrives. Luckily, this is exactly what Materialize's materialized views were built to do! Better yet,
+our materialized views will always return up-to-date results without manual or configured refreshes.
+For more information, check out [our documentation](https://materialize.com/docs/).
 
 ### Seeds
 
