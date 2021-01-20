@@ -11,7 +11,7 @@
 
   {% call statement('main') -%}
     -- Creates a materialized view, not a table, in Materialize
-    {{ create_materialized_view_as(target_relation, sql) }}
+    {{ materialize__create_materialized_view_as(target_relation, sql) }}
   {%- endcall %}
 
   {% do persist_docs(target_relation, model) %}

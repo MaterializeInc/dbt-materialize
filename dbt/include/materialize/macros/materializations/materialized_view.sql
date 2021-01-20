@@ -10,7 +10,7 @@
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
   {% call statement('main') -%}
-    {{ create_materialized_view_as(target_relation, sql) }}
+    {{ materialize__create_materialized_view_as(target_relation, sql) }}
   {%- endcall %}
 
   {% do persist_docs(target_relation, model) %}
