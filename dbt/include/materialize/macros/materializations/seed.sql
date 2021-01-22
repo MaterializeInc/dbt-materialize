@@ -28,7 +28,7 @@
     )
   {% endset %}
 
-  {% do adapter.add_query(sql, bindings=bindings, abridge_sql_log=True) %}
+  {% do adapter.add_query(sql, bindings=bindings, abridge_sql_log=True, auto_begin=False) %}
   {{ return(sql) }}
 
 {%- endmacro %}

@@ -9,7 +9,7 @@
 
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
-  {% call statement('main') -%}
+  {% call statement('main', auto_begin=False) -%}
     {{ materialize__create_materialized_view_as(target_relation, sql) }}
   {%- endcall %}
 
