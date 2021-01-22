@@ -16,7 +16,7 @@
   {% if relation.database -%}
     {{ adapter.verify_database(relation.database) }}
   {%- endif -%}
-  {%- call statement('create_schema') -%}
+  {%- call statement('create_schema', auto_begin=False) -%}
     create schema if not exists {{ relation.without_identifier().include(database=False) }}
   {%- endcall -%}
 {% endmacro %}
@@ -25,14 +25,14 @@
   {% if relation.database -%}
     {{ adapter.verify_database(relation.database) }}
   {%- endif -%}
-  {%- call statement('drop_schema') -%}
+  {%- call statement('drop_schema', auto_begin=False) -%}
     drop schema if exists {{ relation.without_identifier().include(database=False) }} cascade
   {%- endcall -%}
 {% endmacro %}
 
 {% macro materialize__rename_relation(from_relation, to_relation) -%}
   {% set target_name = adapter.quote_as_configured(to_relation.identifier, 'identifier') %}
-  {% call statement('rename_relation') -%}
+  {% call statement('rename_relation', auto_begin=False) -%}
     alter view {{ from_relation }} rename to {{ target_name }}
   {%- endcall %}
 {% endmacro %}
